@@ -1,0 +1,268 @@
+---
+title: "Yisrael_CMN 496 Final Project"
+author: "Eleazar Yisrael"
+date: "2025-12-01"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## The Framing of Immigration within the 2024 Presidential Race: Examining Conflict-Oriented Frames Across News Outlets with Varying Degrees of Reliability and Bias
+
+### Abstract
+This research paper examines the presence of conflict-oriented framing regarding immigration during the 2024 presidential race, across different news platforms– all with varying degrees of bias and political leanings. Conflict-oriented framing of the news is when the clashing of political stances are highlighted (van der Goot et. al., 2025) as opposed to focusing on the contents of an issue (Kim and Zhou, 2020). Some studies find that conflict framing increases political polarization (Kim and Zhou, 2020) and others argue that it mobilises Americans to discuss and participate in politics (Bjarnøe, 2021). Computational analysis was used to measure the ways in which the Associated Press (AP), Wall Street Journal (WSJ), New York Times (NYT), and Fox News categorized and framed Democratic and Republican’s immigration policy through the lens of the 2024 Presidential Race. In this research, conflict-oriented framing of politics consists of identifying two parties (individual/group), such as Democrat or Republican and/or Trump and Kamala, a topic, in this case, immigration, and an emotionally charged word per the NRC Emotion Lexicon. Ad Fontes Media’s Media Bias Chart is used as a metric for news bias and reliability amongst the 4 chosen platforms, giving variety to the sample’s slant and amount of bias/reliability. The comparative results regarding conflict framing of immigration in the headlines of AP, NYT, Fox, and WSJ through the lens of the 2024 Presidential Race, suggest that outlets slanted to the right typically have more of a presence of conflict-oriented frames in addition to the more of an increased level of conflict. However, there is no correlation between bias and reliability regarding the presence of conflict-frames and charged level.
+
+### Introduction
+  Framing is the selective formatting of an event and/or issue, which influences perceptions of reality (Sikorski and Matthes, 2020). Conflict framing or when frames “emphasizes conflict between individuals, groups, or institutions as a means of capturing audience interest” (Semetko & Valkenburg,  2000), falls under the umbrella of emphasis framing (S. van der Goot et. al., 2025). Emphasis framing makes a particular problem or issue more prominently stand out (Nelson, 2019). Within the context of modern journalism, conflict-oriented framing of politics is when conflicting political stances or disagreement in regards to political issues between parties  are emphasized in the news– journalists either represent or actively construct the conflict (van der Groot et. al., 2022). 
+  Journalists frequently use conflict frames (Pew Research Center, 1998), but this study particularly seeks to understand how this is used between varying types of platforms. Examining the presence of conflict-frames amongst news platforms with varying bias and reliability in America offers a new perspective to the conversation of conflict-framing in American news. Conflict framing in seriousness vs sensationalist platforms has been studied in Europe and it was found that, “serious newspapers and television news programs more often used the responsibility and conflict frames in the presentation of news, whereas sensationalist outlets more often used the human interest frame” (Semetko and Valkenburg, 2006). Meanwhile, this study seeks to understand how levels of outlet reliability and bias, as well as slants, correlate with the presence and chargedness of conflict-frames.
+  The presidential race of 2024 was one of the highest election turnouts in the past century (Pew Research Center, 2025). During this high-turnout election, immigration was one of the most important issues at hand, especially amongst Republican voters (Pew Research, 2024). Understanding how different new outlets frame the topic of immigration during 2024’s election, serves as a pivotal role in understanding how different platforms may or may not shape the perception of a hot-button issue, particularly within a high stakes environment.
+
+
+### Research Questions
+
+RQ1) How does the presence of conflict-oriented framing of politics compare among news platforms of relatively more reliability and relatively less reliability?
+
+RQ2) How does the presence of conflict-oriented framing of politics compare among news platforms of relatively less bias and relatively more bias?
+
+RQ3) How does the presence of conflict-oriented framing of politics compare among differently slanted news platforms?
+
+
+### Methods
+  Using r coding, conflict-oriented framing of politics and more specifically, immigration was coded for by identifying three parts of an articles’ headline. The first step consists of identifying two parties (individual/group), such as Democrat or Republican and/or Trump and Kamala. Next a topic, in this case, immigration, must be identified using name-entity recognition. Lastly, an emotionally charged word (anger, fear, disgust, and negative) per the NRC Emotion Lexicon, must be identified. Therefore, in order for a headline to be identified as conflict-oriented, it must have two parties, the topic of immigration, and an emotionally charged word present per the guidelines. The level of conflict is measured by the amount of charged words present in the headline.
+  Computational analysis was used to measure the ways in which the Associated Press (AP), Wall Street Journal (WSJ), New York Times (NYT), and Fox News categorize and frame Democratic and Republican’s immigration policy through the lens of the 2024 Presidential Race. Using Ad Fontes Media’s Media Bias Chart as a metric for news bias amongst the 4 chosen platforms, gives variety to the sample’s slant and amount of bias/reliability. Ad Fontes' media chart’s reliability scale ranges from 0 to 64, and the bias goes from -42.0 (left-leaning political bias) to +42.0 (right-leaning political bias). The Associated Press has a reliability of 44.8 and bias of -2.47 and the Wall Street Journal has a reliability of 43.31 and bias of +4.17. Relatively, these scores are seen as fair, with the organizations being valued as reliable sources of information. Another source that is considered a reliable source of information is the NYT with a reliability score of 40.97 and a bias score of -8.07. Fox News (website) has a reliability of 35.16 and bias +11.08. In the case of Fox News, this source is deemed as a less reliable source of information compared to the others.
+
+
+#### Libraries
+```{r}
+library(tidyverse)
+library(tidytext)
+library(stringr)
+library(textdata)
+library(rvest)
+library(readxl)
+library(ggplot2)
+```
+
+#### Read Data
+```{r}
+wsj_nyt1 <- read_excel("C:\\Users\\eleazar\\Desktop\\week11-project_management\\Yisrael_finalprojectdraft\\Data\\WSJ_New York Times1.xls")
+
+wsj_nyt2 <- read_excel("C:\\Users\\eleazar\\Desktop\\week11-project_management\\Yisrael_finalprojectdraft\\Data\\WSJ_New York Times2.xls")
+
+wsj_nyt3 <- read_excel("C:\\Users\\eleazar\\Desktop\\week11-project_management\\Yisrael_finalprojectdraft\\Data\\WSJ_New York Times3.xls")
+
+wsj_nyt4 <- read_excel("C:\\Users\\eleazar\\Desktop\\week11-project_management\\Yisrael_finalprojectdraft\\Data\\WSJ_New York Times4.xls")
+
+Fox_AP <- read_excel("C:\\Users\\eleazar\\Desktop\\week11-project_management\\Yisrael_finalprojectdraft\\Data\\Fox_AP__Slate_conflict_frame1\\Results list for_Immigration AND Trump.XLSX")
+```
+
+
+#### Data Cleaning
+```{r}
+#Combining into one table
+all_articles <- bind_rows(wsj_nyt1, wsj_nyt2, wsj_nyt3, wsj_nyt4, Fox_AP)
+
+all_articles <- all_articles %>% rename(title = Title)
+
+all_articles$outlet <- ifelse(!is.na(all_articles$pubtitle), all_articles$pubtitle, all_articles$Publication...4)
+
+articles <- all_articles %>% select(title, outlet)
+
+articles <- articles %>% distinct(title, .keep_all = TRUE)
+
+
+#Cleaning titles
+articles_clean <- articles %>% mutate(title_clean = str_to_lower(str_trim(title)))
+
+#Separating Words in Title
+title_words <-  articles_clean %>% mutate(id = row_number()) %>% unnest_tokens(word, title_clean)
+```
+
+
+#### Code
+```{r}
+#Charged words
+nrc <- get_sentiments("nrc")
+
+charged_dict <- nrc %>% filter(sentiment %in% c("anger", "fear", "disgust", "negative")) %>% distinct(word) %>% mutate(charged = 1L) 
+
+```
+
+
+#### Name-entity recognition
+```{r}
+groups <- articles_clean
+
+#Separating/identifying groups on title
+groups$has_democrat <- if_else(str_detect(groups$title_clean, "democrat|democrats|liberal|liberals|democratic|kamala|harris|biden"), 1L, 0L)
+
+groups$has_republican <- if_else(str_detect(groups$title_clean, "republican|republicans|conservative|conservatives|gop|trump"), 1L, 0L)
+
+
+#Separating/identifying topic
+groups$has_immigration <- if_else(str_detect(groups$title_clean, "immigration|immigration,|immigration|border|'border|border?|ICE|deportation|deportations|deport|deporting|deports|immigrant|migrant|migrants|immigrants"), 1L, 0L)
+
+
+```
+
+
+
+#### Coding for Conflict-Framing
+```{r}
+title_words_coding <- title_words
+
+
+#Joining charged words
+title_words_coding <- left_join(title_words_coding, charged_dict, by = "word")
+
+
+#Replacing missing with 0 for adding
+title_words_coding$charged <- if_else(is.na(title_words_coding$charged), 0L, 1L)
+
+
+#Sum of titles
+title_sum <- title_words_coding |> group_by(id, outlet, title) |> summarise(charged_count = sum(charged, na.rm = TRUE), .groups = "drop")
+
+
+#Overall charged label
+title_sum$charged_label <- if_else(title_sum$charged_count > 0, 1L, 0L)
+
+
+#Adding NER
+groups_joined <- groups %>% select(title, outlet, has_democrat, has_republican, has_immigration) %>% distinct()
+
+title_sum <- left_join(title_sum, groups_joined, by = c("title", "outlet"))
+
+title_sum$topic_label <- if_else(title_sum$has_immigration > 0, 1L, 0L)
+
+title_sum$group_label <- if_else((title_sum$has_democrat == 1L) & (title_sum$has_republican == 1L), 1L, 0L)
+
+
+#Calculating if title is conflict-oriented
+title_sum$conflict_oriented <- ifelse(title_sum$charged_label == 1 & title_sum$topic_label == 1 & title_sum$group_label == 1, 1, 0)
+
+```
+
+###### Creating excel file to display table
+library(openxlsx)
+library(grid)
+library(gridExtra)
+
+write.xlsx(title_sum, "table.xlsx")
+
+png("my_table1.png", width = 5000, height = 1000, res = 150)
+grid.table(as.data.frame(title_sum))
+dev.off()
+
+
+#### Isolating titles with conflict framing
+```{r}
+conflict_oriented_only <- title_sum[title_sum$conflict_oriented == 1, ]
+
+conflict_oriented_df <- conflict_oriented_only[, c("outlet", "title", "charged_count")]
+```
+
+###### Creating excel file to display table
+write.xlsx(conflict_oriented_df, "table2.xlsx")
+
+png("my_table2.png", width = 2500, height = 700, res = 150)
+grid.table(as.data.frame(conflict_oriented_df))
+dev.off()
+
+#### Calculating the amount of conlfict-oriented frames of politics per news outlet
+```{r}
+titles_per_outlet <- articles_clean %>% group_by(outlet) %>% summarise(total_titles = n())
+
+conflict_frames_per_outlet <- conflict_oriented_only %>% group_by(outlet) %>% summarise(conflict_titles = n())
+
+outlet_total <- titles_per_outlet %>% left_join(conflict_frames_per_outlet, by = "outlet") %>% mutate(conflict_titles = if_else(is.na(conflict_titles), 0L, conflict_titles))
+
+outlet_total <- outlet_total %>% mutate(percent_conflict = (conflict_titles / total_titles) * 100)
+
+```
+
+
+
+#### Calculating average charged score for each outlet when conflict-frames are present
+```{r}
+average_charge_score <- conflict_oriented_df %>% group_by(outlet) %>% summarise(average_charge = mean(charged_count, na.rm = TRUE))
+```
+
+###### Creating excel file to display table
+write.xlsx(conflict_oriented_df, "table2.xlsx")
+
+###### Creating png file to display table
+png("my_table3.png", width = 400, height = 300, res = 150)
+grid.table(as.data.frame(average_charge_score))
+dev.off()
+
+
+#### Visualizing the Results
+```{r}
+# Combining the tables that have the final results
+combined_final_tables <- outlet_total %>% select(outlet, percent_conflict) %>% left_join(average_charge_score %>% select(outlet, average_charge), by = "outlet")
+
+
+# Reliability and bias for outlets (According to ad fontes media)
+combined_final_tables <- combined_final_tables %>% mutate(
+reliability = case_when(outlet == "The Associated Press" ~ 44.80, outlet == "Wall Street Journal"  ~ 43.30, outlet == "The New York Times" ~ 40.97, outlet == "Fox News" ~ 34.91),
+bias = case_when(outlet == "The Associated Press" ~ -2.46, outlet == "Wall Street Journal"  ~ 4.14, outlet == "The New York Times" ~ -8.07, outlet == "Fox News" ~ 11.11))
+
+
+# Creating shorter outlet titles
+combined_final_tables$outlet_short[combined_final_tables$outlet == "The Associated Press"] <- "AP"
+
+combined_final_tables$outlet_short[combined_final_tables$outlet == "The New York Times"] <- "NYT"
+
+combined_final_tables$outlet_short[combined_final_tables$outlet == "Wall Street Journal"] <- "WSJ"
+
+combined_final_tables$outlet_short[combined_final_tables$outlet == "Fox News"] <- "Fox"
+
+
+# Percentage per outlet data for ggplot
+plot_percentage_data <- combined_final_tables[, c("outlet_short", "reliability", "bias")]
+
+plot_percentage_data$value  <- combined_final_tables$percent_conflict
+
+plot_percentage_data$metric <- "Percent of Conflict-Framed Headlines"
+
+# Average charged score data for ggplot
+plot_charged_data <- combined_final_tables[, c("outlet_short", "bias", "reliability")]
+
+plot_charged_data$value  <- combined_final_tables$average_charge
+
+plot_charged_data$metric <- "Average Charged Score of Conflict Frames"
+
+
+# Structuring for ggplot
+plot_data <- rbind(plot_percentage_data, plot_charged_data)
+
+
+# ggplot visualization
+ggplot(plot_data, aes(x = outlet_short, y = value)) + geom_col(aes(fill = outlet_short), show.legend = FALSE) + facet_wrap(~ metric, scales = "free_y") + labs(title = "Percentage of Conflict Frames and Charged Score by Outlet", x = "News Outlet", y = "Value") + theme_minimal()
+
+```
+
+
+
+### Results
+
+##### RQ1) How does the presence of conflict-oriented framing of politics compare among news platforms of relatively more reliability and relatively less reliability?
+According to the data, there seems to be no correlation between reliability and the presence of conflict-frames and charged level.
+
+
+##### RQ2) How does the presence of conflict-oriented framing of politics compare among news platforms of relatively less bias and relatively more bias?
+According to the data, there seems to be no correlation between bias and the presence of conflict-frames and charged level.
+
+
+##### RQ3) How does the presence of conflict-oriented framing of politics compare among differently slanted news platforms?
+Outlets slanted to the right typically have more of a presence of conflict-oriented frames in addition to the level of charge regarding those frames.
+
+
+### Limitations and Future Direction
+  In regards to the data, it would be amiss not to recognize the relatively small sample size, as I started off with about 1,300 news articles, which distilled down to about 730 once duplicates were accounted for. With this amount, it’s hard to yield definitive results, but rather a structurally sound starting point that I hope to go off of. It was challenging collecting data, especially from sites like NexisUni, where there is a strict limit on the articles that can be downloaded at once. In the future, I will include the subheading in the data as well in order for the code to fully comprehend the entirety of the headline.
+	Another limitation presented by the study was the nuance needed by the implementation of the NRC dictionary. The dictionary had an immense amount of words, and very rich labeling, but I didn’t have the capacity to look through thousands of words and tailor the dictionary specifically to this coding for the nuance that was required. In the future, I will use LLM and ChatGPT to identify conflict-frames using specific criteria– accounting for this study’s code, as well as a more tailored NRC word dictionary. 
+	Future direction for this also entails the examination of conflict-frames in additional context, such as the entirety of Trump presidential races or the conflict surrounding Venezuela and the progression of it. It could be worthwhile to explore how conflict-frames change with different time periods/scenarios. Also, a very interesting exploration could involve studying Google’s search result and the headlines that come up. Studying the prevalence of conflict-frames for recommended titles on Google could be key in understanding how perceptions about topics are formed.
+
